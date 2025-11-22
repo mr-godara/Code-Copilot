@@ -1,36 +1,37 @@
 # Code Generation Copilot - Full-Stack Application
 
-A minimal full-stack web application that allows users to generate code using AI, view syntax-highlighted results, and browse their generation history with pagination.
+A powerful full-stack web application that allows users to generate code using AI, view syntax-highlighted results, and browse their generation history with pagination.
 
 ## 🎯 Project Overview
 
-This application provides a code generation service powered by OpenAI's API, featuring:
-- Natural language code generation for multiple programming languages
-- Syntax-highlighted code display
-- Paginated history of all generations
-- Relational database with proper normalization
-- RESTful API backend
-- Responsive React frontend
+This application provides an intelligent code generation service powered by OpenAI's GPT API, featuring:
+- Natural language to code conversion for 10+ programming languages
+- Beautiful syntax-highlighted code display with Prism.js
+- Complete generation history with pagination
+- MySQL/PostgreSQL database with proper normalization
+- RESTful API backend with validation
+- Modern responsive React frontend
 
 ## 🏗️ Tech Stack
 
 ### Frontend
-- **React 18** with Vite
-- **TailwindCSS** for styling
-- **Prism.js** for syntax highlighting
-- **Axios** for API calls
-- **React Icons** for UI elements
+- **React 18** with Vite for fast development
+- **TailwindCSS** for modern, responsive styling
+- **Prism.js** for multi-language syntax highlighting
+- **Axios** for API communication
+- **React Icons** for beautiful UI elements
 
 ### Backend
-- **Node.js** with **Express.js**
-- **PostgreSQL** for relational database
+- **Node.js** with **Express.js** framework
+- **MySQL** / **PostgreSQL** for relational database
 - **Sequelize ORM** for database management
-- **OpenAI API** for code generation
-- **Express Validator** for input validation
-- **CORS** enabled
+- **OpenAI API** (GPT-3.5-turbo) for code generation
+- **Express Validator** for robust input validation
+- **CORS** enabled for cross-origin requests
 
 ### Database
-- **PostgreSQL** (production)
+- **MySQL** (default, production-ready)
+- **PostgreSQL** (alternative option)
 - **SQLite** (optional for local development)
 
 ## 📁 Project Structure
@@ -85,10 +86,6 @@ AutomationEdge_Assignment/
 
 ## 🗄️ Database Schema
 
-### ER Diagram
-
-See [ER_DIAGRAM.md](./ER_DIAGRAM.md) for the complete entity-relationship diagram.
-
 ### Tables
 
 #### 1. **users** (Optional - for multi-user support)
@@ -97,13 +94,13 @@ See [ER_DIAGRAM.md](./ER_DIAGRAM.md) for the complete entity-relationship diagra
 - `email` (Unique, Not Null)
 - `created_at` (Timestamp)
 
-#### 2. **languages** (Lookup/Reference Table)
+#### 2. **languages** (Reference Table)
 - `id` (Primary Key, Auto-increment)
 - `name` (Unique, e.g., "Python", "JavaScript")
 - `extension` (e.g., ".py", ".js")
 - `created_at` (Timestamp)
 
-#### 3. **generations** (Main Data Table)
+#### 3. **generations** (Main Table)
 - `id` (Primary Key, Auto-increment)
 - `prompt` (Text, Not Null)
 - `language_id` (Foreign Key → languages.id)
@@ -111,34 +108,21 @@ See [ER_DIAGRAM.md](./ER_DIAGRAM.md) for the complete entity-relationship diagra
 - `code` (Text, Not Null)
 - `created_at` (Timestamp, Indexed)
 
-### Schema Decisions
+### Key Design Decisions
 
-**Normalization:**
-- The database follows **3NF (Third Normal Form)**
-- Languages are stored in a separate table to avoid redundancy and ensure data integrity
-- Each generation references a language via foreign key rather than storing language name repeatedly
-- This reduces storage space and ensures consistency (e.g., can't have "python", "Python", "PYTHON" as separate entries)
+**Normalization (3NF):**
+- Languages stored separately to avoid redundancy
+- Each generation references language via foreign key
+- Reduces storage and ensures consistency
 
 **Foreign Keys:**
-- `generations.language_id` → `languages.id` (CASCADE on delete to remove generations if language is removed)
-- `generations.user_id` → `users.id` (SET NULL on delete to preserve generations even if user is deleted)
+- `language_id` → CASCADE delete (removes generations if language deleted)
+- `user_id` → SET NULL delete (preserves generations if user deleted)
 
-**Constraints:**
-- Languages have unique names to prevent duplicates
-- Prompts and code fields are NOT NULL (required for meaningful data)
-- Timestamps are auto-generated and indexed for efficient sorting
-
-**Why a `users` table?**
-- Supports future multi-user scenarios
-- Allows tracking which user created which generation
-- Enables user-specific history filtering
-- Nullable foreign key means the app works without user authentication initially
-
-**Why a `languages` table?**
-- Centralizes language configuration (name, file extensions, syntax highlighting info)
-- Enables easy addition of new languages without code changes
-- Provides referential integrity
-- Allows aggregation queries (e.g., "most popular language")
+**Indexes:**
+- `created_at` DESC for fast pagination
+- `language_id` for efficient JOINs
+- Primary keys for O(1) lookups
 
 ## ⚡ Complexity Analysis
 
@@ -202,8 +186,8 @@ See [ER_DIAGRAM.md](./ER_DIAGRAM.md) for the complete entity-relationship diagra
 ### Prerequisites
 
 - Node.js 18+ and npm
-- PostgreSQL 14+ (or SQLite for local testing)
-- OpenAI API key
+- MySQL 8.0+ or PostgreSQL 14+ (SQLite optional for development)
+- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 
 ### Backend Setup
 
@@ -217,30 +201,53 @@ cd backend
 npm install
 ```
 
-3. Create `.env` file from example:
+3. Create `.env` file:
 ```bash
+# Copy example file
 cp .env.example .env
+
+# Or create manually with these variables
 ```
 
 4. Configure environment variables in `.env`:
 ```env
+# Server Configuration
 PORT=5000
-DATABASE_URL=postgresql://username:password@localhost:5432/code_copilot
-OPENAI_API_KEY=your_openai_api_key_here
 NODE_ENV=development
+
+# Database (MySQL)
+DATABASE_URL=mysql://root:password@localhost:3306/code_copilot
+
+# Database (PostgreSQL alternative)
+# DATABASE_URL=postgresql://username:password@localhost:5432/code_copilot
+
+# OpenAI API
+OPENAI_API_KEY=your_openai_api_key_here
+
+# CORS
+CORS_ORIGIN=http://localhost:5173
 ```
 
-5. Run database migrations:
+5. Create database:
+```sql
+-- For MySQL
+CREATE DATABASE code_copilot;
+
+-- For PostgreSQL
+CREATE DATABASE code_copilot;
+```
+
+6. Run database migrations:
 ```bash
 npm run migrate
 ```
 
-6. Seed initial languages:
+7. Seed initial languages:
 ```bash
 npm run seed
 ```
 
-7. Start the server:
+8. Start the server:
 ```bash
 npm run dev
 ```
@@ -259,22 +266,24 @@ cd frontend
 npm install
 ```
 
-3. Create `.env` file:
+3. Create `.env` file (optional, uses localhost:5000 by default):
 ```bash
-cp .env.example .env
+# Create .env file
+echo "VITE_API_URL=http://localhost:5000" > .env
 ```
 
-4. Configure API URL in `.env`:
-```env
-VITE_API_URL=http://localhost:5000
-```
-
-5. Start development server:
+4. Start development server:
 ```bash
 npm run dev
 ```
 
 Frontend will run at `http://localhost:5173`
+
+### Verification
+
+1. Check backend health: `http://localhost:5000/api/health`
+2. Open frontend: `http://localhost:5173`
+3. Try generating code with prompt: "Write a function to reverse a string"
 
 ## 📡 API Documentation
 
@@ -404,26 +413,29 @@ Check API status.
 ## 🎨 Features
 
 ### Frontend Features
-- ✅ Natural language prompt input
-- ✅ Language selection dropdown (Python, JavaScript, TypeScript, C++, Java, Go, Rust)
-- ✅ Real-time code generation with loading states
-- ✅ Syntax-highlighted code display (Prism.js)
-- ✅ Copy to clipboard functionality
-- ✅ Paginated history view (10 items per page)
-- ✅ Error handling with user-friendly messages
-- ✅ Responsive design (mobile, tablet, desktop)
-- ✅ Dark/light mode toggle
+- ✅ Clean, intuitive UI with natural language prompt input
+- ✅ Language selection dropdown (Python, JavaScript, TypeScript, C++, Java, Go, Rust, C#, PHP, Ruby)
+- ✅ Real-time code generation with smooth loading animations
+- ✅ Professional syntax-highlighted code display (Prism.js with 10+ language support)
+- ✅ One-click copy to clipboard functionality
+- ✅ Paginated history view with detailed metadata
+- ✅ Comprehensive error handling with user-friendly messages
+- ✅ Fully responsive design (mobile, tablet, desktop optimized)
+- ✅ Modern gradient UI with Tailwind CSS
 
 ### Backend Features
-- ✅ RESTful API with Express.js
-- ✅ Input validation and sanitization
-- ✅ OpenAI API integration (GPT-3.5-turbo)
-- ✅ PostgreSQL database with Sequelize ORM
-- ✅ Database migrations and seeding
-- ✅ Error handling middleware
-- ✅ CORS configuration
+- ✅ RESTful API with Express.js framework
+- ✅ Robust input validation and sanitization (Express Validator)
+- ✅ OpenAI API integration (GPT-3.5-turbo model)
+- ✅ Multi-database support (MySQL/PostgreSQL/SQLite)
+- ✅ Automated database migrations and seeding
+- ✅ Global error handling middleware
+- ✅ CORS configuration with security
 - ✅ Environment-based configuration
-- ✅ API request logging
+- ✅ Detailed API request/response logging
+
+### Supported Languages
+Python • JavaScript • TypeScript • C++ • Java • Go • Rust • C# • PHP • Ruby
 
 ## 🌐 Deployment
 
@@ -432,99 +444,32 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
 ### Quick Deploy Options
 
 **Backend:**
-- Render.com (free tier)
-- Railway.app
-- Heroku
-- AWS Elastic Beanstalk
+- Render.com (free tier with auto-deploy)
+- Railway.app (easy database + backend)
+- Heroku (classic platform)
 
 **Frontend:**
-- Vercel (recommended)
-- Netlify
-- GitHub Pages (with routing config)
+- Vercel (recommended - zero config)
+- Netlify (with SPA routing)
+- GitHub Pages
 
 **Database:**
-- Supabase (free PostgreSQL)
-- Neon.tech (serverless PostgreSQL)
-- Railway.app PostgreSQL
-
-### Environment Variables for Production
-
-**Backend `.env`:**
-```env
-NODE_ENV=production
-PORT=5000
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
-OPENAI_API_KEY=sk-...
-CORS_ORIGIN=https://your-frontend.vercel.app
-```
-
-**Frontend `.env`:**
-```env
-VITE_API_URL=https://your-backend.onrender.com
-```
-
-## 🎥 Video Demo
-
-See [VIDEO_SCRIPT.md](./VIDEO_SCRIPT.md) for the complete demo walkthrough script.
-
-**Demo Flow (2-3 minutes):**
-1. Show landing page and UI
-2. Enter prompt: "Write a Python function to calculate factorial"
-3. Select language: Python
-4. Click "Generate Code"
-5. Show loading state
-6. Display generated code with syntax highlighting
-7. Copy code to clipboard
-8. Navigate to history section
-9. Show paginated list with previous generations
-10. Test pagination controls
-11. Show database entry (pgAdmin or SQL query)
-
-## 🧪 Testing
-
-### Backend Tests
-```bash
-cd backend
-npm test
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm test
-```
-
-### API Tests (Postman/Thunder Client)
-Import the `api-tests.json` collection from the `tests/` directory.
-
-## 🔒 Security Considerations
-
-- API keys stored in environment variables (never committed)
-- Input validation on all endpoints
-- SQL injection prevention via Sequelize ORM
-- CORS configuration for trusted origins
-- Rate limiting on API endpoints (production)
-- Prepared statements for all queries
-
-## 📝 License
-
-MIT License - feel free to use this project for learning and portfolio purposes.
+- Railway.app MySQL/PostgreSQL
+- PlanetScale (MySQL serverless)
+- Supabase (PostgreSQL free tier)
+- Neon.tech (PostgreSQL serverless)
 
 ## 👨‍💻 Author
 
-Built as part of AutomationEdge Full-Stack Assignment
+Built by **Dhruv Godara** as part of Full-Stack Development Portfolio
 
-## 🙏 Acknowledgments
+**GitHub:** [mr-godara](https://github.com/mr-godara)  
+**Repository:** [Code-Copilot](https://github.com/mr-godara/Code-Copilot)
 
-- OpenAI for GPT API
-- React and Express communities
-- Sequelize ORM documentation
-- TailwindCSS for styling framework
+## 📜 License
+
+MIT License - Free to use for learning and portfolio purposes.
 
 ---
 
-**Demo Credentials (if users table is implemented):**
-- Username: `demo@example.com`
-- Password: `demo123` (if authentication is added)
-
-For questions or issues, please open a GitHub issue or contact the repository owner.
+**Need Help?** Open an issue on GitHub or contact the repository owner.
