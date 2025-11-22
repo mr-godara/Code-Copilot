@@ -1,106 +1,94 @@
-# Code Generation Copilot - Full-Stack Application
+# Code Generation Copilot
 
-A powerful full-stack web application that allows users to generate code using AI, view syntax-highlighted results, and browse their generation history with pagination.
+A modern, full-stack AI-powered code generation application built with React, Node.js, and MySQL. This intelligent system allows users to convert natural language prompts into code across 10+ programming languages, view beautifully syntax-highlighted results, and manage their generation history.
 
-## 🎯 Project Overview
+## 🚀 Live Demo
 
-This application provides an intelligent code generation service powered by OpenAI's GPT API, featuring:
-- Natural language to code conversion for 10+ programming languages
-- Beautiful syntax-highlighted code display with Prism.js
-- Complete generation history with pagination
-- MySQL/PostgreSQL database with proper normalization
-- RESTful API backend with validation
-- Modern responsive React frontend
+⚠️ **Note:** Backend may experience cold starts if deployed on free tier services. Please allow 30-60 seconds for initial load.
 
-## 🏗️ Tech Stack
+
+## 📚 API Documentation
+
+**Interactive API Documentation:** [![API Documentation](./docs/screenshots/api-docs.png)](http://localhost:5000/api-docs)
+
+Complete API documentation with interactive examples is available at `/api-docs` after starting the server.
+
+🔗 **Make sure your server is running locally at** `http://localhost:5000`
+
+## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** with Vite for fast development
-- **TailwindCSS** for modern, responsive styling
-- **Prism.js** for multi-language syntax highlighting
-- **Axios** for API communication
-- **React Icons** for beautiful UI elements
+- **React 18** with **Vite**
+- **TailwindCSS**
+- **Prism.js** (Syntax Highlighting)
+- **Axios**
+- **React Icons**
 
 ### Backend
-- **Node.js** with **Express.js** framework
-- **MySQL** / **PostgreSQL** for relational database
-- **Sequelize ORM** for database management
-- **OpenAI API** (GPT-3.5-turbo) for code generation
-- **Express Validator** for robust input validation
-- **CORS** enabled for cross-origin requests
-
-### Database
-- **MySQL** (default, production-ready)
-- **PostgreSQL** (alternative option)
-- **SQLite** (optional for local development)
+- **Node.js** with **Express.js**
+- **Sequelize ORM**
+- **MySQL** / **PostgreSQL**
+- **OpenAI API** (GPT-3.5-turbo)
+- **Express Validator**
+- **Swagger UI** (API Documentation)
+- **CORS**
 
 ## 📁 Project Structure
 
 ```
-AutomationEdge_Assignment/
+Code-Copilot/
 ├── backend/
 │   ├── src/
-│   │   ├── config/
-│   │   │   └── database.js
-│   │   ├── controllers/
-│   │   │   └── codeController.js
-│   │   ├── models/
-│   │   │   ├── index.js
-│   │   │   ├── User.js
-│   │   │   ├── Language.js
-│   │   │   └── Generation.js
-│   │   ├── routes/
-│   │   │   └── api.js
-│   │   ├── services/
-│   │   │   └── aiService.js
-│   │   ├── migrations/
-│   │   │   ├── 001-create-users.js
-│   │   │   ├── 002-create-languages.js
-│   │   │   └── 003-create-generations.js
-│   │   └── middleware/
-│   │       └── errorHandler.js
-│   ├── server.js
-│   ├── package.json
-│   └── .env.example
+│   │   ├── config/           
+│   │   ├── controllers/      
+│   │   ├── middleware/       
+│   │   ├── migrations/       
+│   │   ├── models/           
+│   │   ├── routes/           
+│   │   └── services/         
+│   ├── server.js             
+│   ├── package.json          
+│   └── .env                  
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── CodeGenerator.jsx
+│   │   ├── components/       
 │   │   │   ├── CodeDisplay.jsx
+│   │   │   ├── CodeGenerator.jsx
 │   │   │   ├── HistoryList.jsx
 │   │   │   └── Pagination.jsx
-│   │   ├── services/
-│   │   │   └── api.js
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── main.jsx
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.js
-│   └── tailwind.config.js
-├── README.md
-├── ER_DIAGRAM.md
-├── VIDEO_SCRIPT.md
-└── DEPLOYMENT.md
+│   │   ├── services/         
+│   │   ├── App.jsx           
+│   │   └── main.jsx          
+│   ├── package.json          
+│   └── vite.config.js        
+├── README.md                 
+├── API_DOCUMENTATION.md      
+├── DEPLOYMENT.md             
+└── SETUP.md                  
 ```
 
 ## 🗄️ Database Schema
 
-### Tables
+The application uses MySQL with Sequelize ORM. The database consists of the following main entities:
 
-#### 1. **users** (Optional - for multi-user support)
+**Database Schema Diagram:** Complete database schema showing relationships between entities
+
+![Database Schema Diagram](./docs/screenshots/db-schema-diagram.png)
+### Core Entities
+
+#### **users** - User authentication and profiles
 - `id` (Primary Key, Auto-increment)
 - `username` (Unique, Not Null)
 - `email` (Unique, Not Null)
 - `created_at` (Timestamp)
 
-#### 2. **languages** (Reference Table)
+#### **languages** - Programming language reference
 - `id` (Primary Key, Auto-increment)
 - `name` (Unique, e.g., "Python", "JavaScript")
 - `extension` (e.g., ".py", ".js")
 - `created_at` (Timestamp)
 
-#### 3. **generations** (Main Table)
+#### **generations** - Code generation records
 - `id` (Primary Key, Auto-increment)
 - `prompt` (Text, Not Null)
 - `language_id` (Foreign Key → languages.id)
@@ -108,12 +96,18 @@ AutomationEdge_Assignment/
 - `code` (Text, Not Null)
 - `created_at` (Timestamp, Indexed)
 
-### Key Design Decisions
+### Key Relationships
+
+- **Users** can have multiple **Generations**
+- **Languages** are used in multiple **Generations**
+- **Generations** belong to one **Language** and optionally one **User**
+
+### Database Design Decisions
 
 **Normalization (3NF):**
 - Languages stored separately to avoid redundancy
 - Each generation references language via foreign key
-- Reduces storage and ensures consistency
+- Reduces storage and ensures data consistency
 
 **Foreign Keys:**
 - `language_id` → CASCADE delete (removes generations if language deleted)
@@ -181,35 +175,45 @@ AutomationEdge_Assignment/
 - Each index uses additional storage
 - Too many indexes can confuse query optimizer
 
-## 🚀 Setup Instructions
+## 🚀 Local Development Setup
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- MySQL 8.0+ or PostgreSQL 14+ (SQLite optional for development)
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+Make sure you have the following installed on your system:
 
-### Backend Setup
+- **Node.js** (version 18 or higher)
+- **npm** or **yarn** package manager
+- **MySQL** 8.0+ or **PostgreSQL** 14+
 
-1. Navigate to backend directory:
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/mr-godara/Code-Copilot.git
+cd Code-Copilot
+```
+
+### Step 2: Backend Setup
+
+**Navigate to backend directory:**
+
 ```bash
 cd backend
 ```
 
-2. Install dependencies:
+**Install dependencies:**
+
 ```bash
 npm install
 ```
 
-3. Create `.env` file:
-```bash
-# Copy example file
-cp .env.example .env
+**Create environment file:**
 
-# Or create manually with these variables
+```bash
+cp .env.example .env
 ```
 
-4. Configure environment variables in `.env`:
+**Configure environment variables in `.env`:**
+
 ```env
 # Server Configuration
 PORT=5000
@@ -228,7 +232,8 @@ OPENAI_API_KEY=your_openai_api_key_here
 CORS_ORIGIN=http://localhost:5173
 ```
 
-5. Create database:
+**Create database:**
+
 ```sql
 -- For MySQL
 CREATE DATABASE code_copilot;
@@ -237,239 +242,108 @@ CREATE DATABASE code_copilot;
 CREATE DATABASE code_copilot;
 ```
 
-6. Run database migrations:
+**Run database migrations:**
+
 ```bash
 npm run migrate
 ```
 
-7. Seed initial languages:
+**Generate Prisma client (if using Prisma):**
+
 ```bash
-npm run seed
+npx prisma generate
 ```
 
-8. Start the server:
+**Start the backend server:**
+
 ```bash
 npm run dev
 ```
 
-Backend will run at `http://localhost:5000`
+The backend API will be available at `http://localhost:5000`
 
-### Frontend Setup
+### Step 3: Frontend Setup
 
-1. Navigate to frontend directory:
+**Open a new terminal and navigate to frontend directory:**
+
 ```bash
 cd frontend
 ```
 
-2. Install dependencies:
+**Install dependencies:**
+
 ```bash
 npm install
 ```
 
-3. Create `.env` file (optional, uses localhost:5000 by default):
+**Create environment file:**
+
 ```bash
-# Create .env file
-echo "VITE_API_URL=http://localhost:5000" > .env
+cp .env.example .env
 ```
 
-4. Start development server:
+**Configure environment variables in `.env`:**
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+**Start the development server:**
+
 ```bash
 npm run dev
 ```
 
-Frontend will run at `http://localhost:5173`
+The frontend application will be available at `http://localhost:5173`
 
-### Verification
+### Step 4: Verify Installation
 
-1. Check backend health: `http://localhost:5000/api/health`
-2. Open frontend: `http://localhost:5173`
-3. Try generating code with prompt: "Write a function to reverse a string"
+1. Open your browser and go to `http://localhost:5173`
+2. Check backend health: `http://localhost:5000/api/health`
+3. View API documentation: `http://localhost:5000/api-docs`
 
-## 📡 API Documentation
 
-### Base URL
-```
-http://localhost:5000/api
-```
+## ✨ Key Features
 
-### Endpoints
+### User Features
 
-#### 1. Generate Code
-**POST** `/api/generate`
+- **Natural Language to Code** - Convert plain English descriptions into working code
+- **Multi-Language Support** - Python, JavaScript, TypeScript, C++, Java, Go, Rust, C#, PHP, Ruby
+- **Interactive Code Display** - Beautiful syntax highlighting with Prism.js
+- **One-Click Copy** - Instantly copy generated code to clipboard
+- **Generation History** - View and manage all past generations with pagination
+- **Responsive Design** - Optimized for desktop, tablet, and mobile devices
+- **Real-time Feedback** - Loading states and error handling for better UX
 
-Generate code from a natural language prompt.
+### Technical Features
 
-**Request Body:**
-```json
-{
-  "prompt": "Write a Python function to reverse a string",
-  "language": "Python",
-  "userId": 1  // Optional
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 123,
-    "prompt": "Write a Python function to reverse a string",
-    "language": "Python",
-    "code": "def reverse_string(s):\n    return s[::-1]",
-    "createdAt": "2025-11-22T10:30:00.000Z"
-  }
-}
-```
-
-**Error Response (400 Bad Request):**
-```json
-{
-  "success": false,
-  "error": "Prompt is required"
-}
-```
-
-#### 2. Get History
-**GET** `/api/history`
-
-Retrieve paginated list of previous code generations.
-
-**Query Parameters:**
-- `page` (number, default: 1) - Page number
-- `limit` (number, default: 10, max: 50) - Items per page
-- `language` (string, optional) - Filter by language name
-- `userId` (number, optional) - Filter by user ID
-
-**Example Request:**
-```
-GET /api/history?page=2&limit=15&language=Python
-```
-
-**Response (200 OK):**
-```json
-{
-  "success": true,
-  "data": {
-    "generations": [
-      {
-        "id": 123,
-        "prompt": "Write a Python function to reverse a string",
-        "language": "Python",
-        "code": "def reverse_string(s):\n    return s[::-1]",
-        "createdAt": "2025-11-22T10:30:00.000Z"
-      }
-    ],
-    "pagination": {
-      "currentPage": 2,
-      "totalPages": 5,
-      "totalItems": 73,
-      "itemsPerPage": 15,
-      "hasNextPage": true,
-      "hasPreviousPage": true
-    }
-  }
-}
-```
-
-#### 3. Get Supported Languages
-**GET** `/api/languages`
-
-Retrieve list of supported programming languages.
-
-**Response (200 OK):**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "name": "Python",
-      "extension": ".py"
-    },
-    {
-      "id": 2,
-      "name": "JavaScript",
-      "extension": ".js"
-    }
-  ]
-}
-```
-
-#### 4. Health Check
-**GET** `/api/health`
-
-Check API status.
-
-**Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "API is running",
-  "timestamp": "2025-11-22T10:30:00.000Z"
-}
-```
-
-## 🎨 Features
-
-### Frontend Features
-- ✅ Clean, intuitive UI with natural language prompt input
-- ✅ Language selection dropdown (Python, JavaScript, TypeScript, C++, Java, Go, Rust, C#, PHP, Ruby)
-- ✅ Real-time code generation with smooth loading animations
-- ✅ Professional syntax-highlighted code display (Prism.js with 10+ language support)
-- ✅ One-click copy to clipboard functionality
-- ✅ Paginated history view with detailed metadata
-- ✅ Comprehensive error handling with user-friendly messages
-- ✅ Fully responsive design (mobile, tablet, desktop optimized)
-- ✅ Modern gradient UI with Tailwind CSS
-
-### Backend Features
-- ✅ RESTful API with Express.js framework
-- ✅ Robust input validation and sanitization (Express Validator)
-- ✅ OpenAI API integration (GPT-3.5-turbo model)
-- ✅ Multi-database support (MySQL/PostgreSQL/SQLite)
-- ✅ Automated database migrations and seeding
-- ✅ Global error handling middleware
-- ✅ CORS configuration with security
-- ✅ Environment-based configuration
-- ✅ Detailed API request/response logging
+- **RESTful API** - Well-documented API endpoints with Swagger UI
+- **JWT Authentication** - Secure user authentication (optional)
+- **Database Normalization** - 3NF compliant schema design
+- **Input Validation** - Comprehensive validation with Express Validator
+- **Error Handling** - Global error handling middleware
+- **Pagination** - Efficient paginated queries with metadata
+- **AI Integration** - OpenAI GPT-3.5-turbo for intelligent code generation
 
 ### Supported Languages
+
 Python • JavaScript • TypeScript • C++ • Java • Go • Rust • C# • PHP • Ruby
 
-## 🌐 Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
 
-### Quick Deploy Options
+## 📄 License
 
-**Backend:**
-- Render.com (free tier with auto-deploy)
-- Railway.app (easy database + backend)
-- Heroku (classic platform)
-
-**Frontend:**
-- Vercel (recommended - zero config)
-- Netlify (with SPA routing)
-- GitHub Pages
-
-**Database:**
-- Railway.app MySQL/PostgreSQL
-- PlanetScale (MySQL serverless)
-- Supabase (PostgreSQL free tier)
-- Neon.tech (PostgreSQL serverless)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👨‍💻 Author
 
-Built by **Dhruv Godara** as part of Full-Stack Development Portfolio
+**Built by Dhruv Godara**
 
-**GitHub:** [mr-godara](https://github.com/mr-godara)  
-**Repository:** [Code-Copilot](https://github.com/mr-godara/Code-Copilot)
-
-## 📜 License
-
-MIT License - Free to use for learning and portfolio purposes.
+- GitHub: [@mr-godara](https://github.com/mr-godara)
+- Repository: [Code-Copilot](https://github.com/mr-godara/Code-Copilot)
 
 ---
+
+**Last updated:** November 2025
 
 **Need Help?** Open an issue on GitHub or contact the repository owner.

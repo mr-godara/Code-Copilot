@@ -3,8 +3,63 @@ const { Generation, Language, User } = require('../models');
 const { generateCode } = require('../services/aiService');
 
 /**
- * Generate code from natural language prompt
- * POST /api/generate
+ * @swagger
+ * /api/generate:
+ *   post:
+ *     summary: Generate code from natural language prompt
+ *     tags: [Generate]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - prompt
+ *               - language
+ *             properties:
+ *               prompt:
+ *                 type: string
+ *                 minLength: 10
+ *                 maxLength: 5000
+ *                 description: Natural language description of code to generate
+ *                 example: Write a Python function to reverse a string
+ *               language:
+ *                 type: string
+ *                 description: Programming language (must match supported languages)
+ *                 example: Python
+ *               userId:
+ *                 type: integer
+ *                 description: Optional user ID
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Code generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     prompt:
+ *                       type: string
+ *                     language:
+ *                       type: string
+ *                     code:
+ *                       type: string
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *       400:
+ *         description: Validation error or unsupported language
+ *       500:
+ *         description: Server error
  */
 exports.generate = [
   // Validation
@@ -107,8 +162,65 @@ exports.generate = [
 ];
 
 /**
- * Get paginated history of code generations
- * GET /api/history?page=1&limit=10&language=Python&userId=1
+ * @swagger
+ * /api/history:
+ *   get:
+ *     summary: Get paginated history of code generations
+ *     tags: [History]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 50
+ *           default: 10
+ *         description: Items per page
+ *       - in: query
+ *         name: language
+ *         schema:
+ *           type: string
+ *         description: Filter by language name
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         description: Filter by user ID
+ *     responses:
+ *       200:
+ *         description: Generation history retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     generations:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         currentPage:
+ *                           type: integer
+ *                         totalPages:
+ *                           type: integer
+ *                         totalItems:
+ *                           type: integer
+ *       400:
+ *         description: Validation error
  */
 exports.getHistory = [
   // Validation
@@ -213,8 +325,41 @@ exports.getHistory = [
 ];
 
 /**
- * Get all supported languages
- * GET /api/languages
+ * @swagger
+ * /api/languages:
+ *   get:
+ *     summary: Get all supported programming languages
+ *     tags: [Languages]
+ *     responses:
+ *       200:
+ *         description: List of supported languages
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       extension:
+ *                         type: string
+ *             example:
+ *               success: true
+ *               data:
+ *                 - id: 1
+ *                   name: Python
+ *                   extension: .py
+ *                 - id: 2
+ *                   name: JavaScript
+ *                   extension: .js
  */
 exports.getLanguages = async (req, res, next) => {
   try {
@@ -233,8 +378,26 @@ exports.getLanguages = async (req, res, next) => {
 };
 
 /**
- * Health check endpoint
- * GET /api/health
+ * @swagger
+ * /api/health:
+ *   get:
+ *     summary: Health check endpoint
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API is running
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
  */
 exports.healthCheck = (req, res) => {
   res.json({
