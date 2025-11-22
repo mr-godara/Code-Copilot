@@ -30,14 +30,6 @@ async function seed() {
 
     console.log('✅ Languages seeded');
 
-    // Seed demo user (optional)
-    const [user, created] = await User.findOrCreate({
-      where: { email: 'demo@example.com' },
-      defaults: {
-        username: 'demo',
-        email: 'demo@example.com'
-      }
-    });
 
     if (created) {
       console.log('✅ Demo user created');
