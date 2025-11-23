@@ -226,7 +226,7 @@ DATABASE_URL=mysql://root:password@localhost:3306/code_copilot
 # DATABASE_URL=postgresql://username:password@localhost:5432/code_copilot
 
 # OpenAI API
-OPENAI_API_KEY=your_openai_api_key_here
+GEMINI_API_KEY=your_GEMINI_api_key_here
 
 # CORS
 CORS_ORIGIN=http://localhost:5173
