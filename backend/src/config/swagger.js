@@ -14,8 +14,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
-        description: 'Development server',
+        url: 'https://code-copilot-backend-0l0z.onrender.com',
+        description: 'Production server',
       },
     ],
     tags: [

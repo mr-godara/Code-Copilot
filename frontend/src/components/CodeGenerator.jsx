@@ -82,65 +82,60 @@ const CodeGenerator = ({ onSuccess }) => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Input Form */}
-      <div className="bg-white rounded-xl shadow-2xl p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Prompt Input */}
-          <div>
-            <label htmlFor="prompt" className="block text-lg font-semibold text-gray-700 mb-2">
-              Describe what code you want to generate
-            </label>
-            <textarea
-              id="prompt"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Example: Write a Python function to calculate the factorial of a number recursively"
-              className="w-full h-32 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none text-gray-800"
-              disabled={loading}
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              {prompt.length} / 5000 characters
-            </p>
-          </div>
-
-          {/* Language Selection */}
-          <div>
-            <label htmlFor="language" className="block text-lg font-semibold text-gray-700 mb-2">
-              Select Programming Language
-            </label>
-            <select
-              id="language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-800"
-              disabled={loading}
-            >
-              {languages.map((lang) => (
-                <option key={lang.id} value={lang.name}>
-                  {lang.name} ({lang.extension})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded animate-fade-in">
-              <p className="font-semibold">Error</p>
-              <p>{error}</p>
+    <div className="animate-fade-in">
+      <div className="grid grid-cols-1 gap-8">
+        {/* Input Form */}
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-purple-100 p-8">
+          <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-purple-600 bg-clip-text text-transparent mb-6">Enter Your Prompt</h3>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Language Selection Dropdown - Styled like screenshot */}
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="flex items-center space-x-2 px-4 py-2 bg-purple-50 rounded-lg border border-purple-200">
+                <FaRocket className="text-purple-600" />
+                <select
+                  id="language"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="bg-transparent border-none outline-none text-gray-700 font-medium cursor-pointer"
+                  disabled={loading}
+                >
+                  {languages.map((lang) => (
+                    <option key={lang.id} value={lang.name}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          )}
 
-          {/* Action Buttons */}
-          <div className="flex space-x-4">
+            {/* Prompt Input */}
+            <div>
+              <textarea
+                id="prompt"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder={`Describe the code you want to generate...\n\nExamples:\n• Write a Python function to reverse a string\n• Create a JavaScript function for fibonacci sequence\n• Implement quicksort in C++`}
+                className="w-full h-40 px-4 py-3 border border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none text-gray-700 placeholder-gray-400 bg-purple-50/30"
+                disabled={loading}
+              />
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-xl animate-fade-in shadow-sm">
+                <p className="font-semibold">Error</p>
+                <p>{error}</p>
+              </div>
+            )}
+
+            {/* Generate Button */}
             <button
               type="submit"
               disabled={loading}
-              className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-lg font-semibold text-white transition-all duration-200 ${
+              className={`w-full flex items-center justify-center space-x-2 py-4 rounded-xl font-semibold text-white text-lg transition-all duration-200 ${
                 loading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl active:scale-95'
+                  : 'bg-gradient-to-r from-purple-600 via-purple-500 to-purple-600 hover:from-purple-700 hover:via-purple-600 hover:to-purple-700 shadow-lg hover:shadow-2xl active:scale-98'
               }`}
             >
               {loading ? (
@@ -151,34 +146,44 @@ const CodeGenerator = ({ onSuccess }) => {
               ) : (
                 <>
                   <FaRocket />
-                  <span>Generate Code</span>
+                  <span>✨ Generate Code Now</span>
                 </>
               )}
             </button>
-            
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={loading}
-              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-all duration-200 disabled:opacity-50"
-            >
-              Clear
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Generated Code Display */}
-      {generatedCode && (
-        <div className="animate-fade-in">
-          <CodeDisplay
-            code={generatedCode.code}
-            language={generatedCode.language}
-            prompt={generatedCode.prompt}
-            timestamp={generatedCode.createdAt}
-          />
+            <p className="text-center text-sm text-gray-500 mt-2">
+              Press Cmd/Ctrl + Enter to generate
+            </p>
+          </form>
         </div>
-      )}
+
+        {/* Generated Code Display */}
+        {generatedCode && (
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-purple-100 p-8 animate-fade-in">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-purple-600 bg-clip-text text-transparent mb-6">Generated Code</h3>
+            <CodeDisplay
+              code={generatedCode.code}
+              language={generatedCode.language}
+              prompt={generatedCode.prompt}
+              timestamp={generatedCode.createdAt}
+            />
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!generatedCode && !loading && (
+          <div className="bg-white/85 backdrop-blur-md rounded-2xl shadow-xl border border-purple-100 p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 via-purple-200 to-purple-300 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <FaRocket className="text-4xl text-purple-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-700 mb-2">No code generated yet</h3>
+              <p className="text-gray-600">
+                Enter a prompt and click Generate to see code here
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -58,18 +58,18 @@ const CodeDisplay = ({ code, language, prompt, timestamp }) => {
   return (
     <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-6 py-4">
+      <div className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-600 px-6 py-4 shadow-md">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-white mb-1">Generated Code</h3>
-            <p className="text-sm text-gray-300">{language}</p>
+            <p className="text-sm text-purple-100">{language}</p>
           </div>
           <button
             onClick={handleCopy}
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
               copied
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-700 hover:bg-gray-600 text-white'
+                ? 'bg-green-500 text-white shadow-lg'
+                : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm'
             }`}
           >
             {copied ? (
@@ -89,9 +89,9 @@ const CodeDisplay = ({ code, language, prompt, timestamp }) => {
 
       {/* Prompt */}
       {prompt && (
-        <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-          <p className="text-sm text-gray-600">
-            <span className="font-semibold">Prompt:</span> {prompt}
+        <div className="bg-purple-50 px-6 py-3 border-b border-purple-100">
+          <p className="text-sm text-gray-700">
+            <span className="font-semibold text-purple-700">Prompt:</span> {prompt}
           </p>
         </div>
       )}
@@ -107,8 +107,8 @@ const CodeDisplay = ({ code, language, prompt, timestamp }) => {
 
       {/* Footer */}
       {timestamp && (
-        <div className="bg-gray-50 px-6 py-2 text-right border-t border-gray-200">
-          <p className="text-xs text-gray-500">
+        <div className="bg-purple-50 px-6 py-2 text-right border-t border-purple-100">
+          <p className="text-xs text-purple-600">
             Generated at {new Date(timestamp).toLocaleString()}
           </p>
         </div>
